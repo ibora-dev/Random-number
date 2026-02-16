@@ -1,96 +1,99 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Nombre aléatoire</title>
-  <style>
-    body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      margin:0; min-height:100vh;
-      display:flex; align-items:center; justify-content:center;
-      background:#0b0f1a; color:#eaf0ff;
-    }
-    .card{
-      width:min(520px, 92vw);
-      padding:24px;
-      border-radius:18px;
-      background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-      text-align:center;
-    }
-    h1{ margin:0 0 10px; font-size:22px; font-weight:700; }
-    .range{ opacity:0.8; margin-bottom:18px; }
-    .num{
-      font-size:44px;
-      font-weight:800;
-      letter-spacing:1px;
-      margin:16px 0 22px;
-      padding:14px 10px;
-      border-radius:14px;
-      background:rgba(0,0,0,0.25);
-      border:1px solid rgba(255,255,255,0.12);
-      user-select:text;
-      word-break: break-all;
-    }
-    button{
-      cursor:pointer;
-      border:none;
-      padding:12px 16px;
-      border-radius:12px;
-      font-weight:700;
-      font-size:16px;
-      background:#7c5cff;
-      color:white;
-    }
-    button:active{ transform: translateY(1px); }
-    .small{
-      margin-top:14px;
-      opacity:0.75;
-      font-size:13px;
-    }
-  </style>
+<meta charset="utf-8">
+<title>—</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg: #0a0a0a;
+  --fg: #e6e6e6;
+  --muted: #7a7a7a;
+}
+
+*{ box-sizing:border-box }
+
+html, body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:var(--bg);
+  color:var(--fg);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.container{
+  text-align:center;
+}
+
+.number{
+  font-size:clamp(3rem, 10vw, 7rem);
+  font-weight:300;
+  letter-spacing:0.08em;
+  opacity:0.92;
+}
+
+.hint{
+  margin-top:24px;
+  font-size:12px;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.fade{
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn{
+  from{ opacity:0; transform:translateY(4px) }
+  to{ opacity:1; transform:none }
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Générateur de nombre aléatoire 🎲</h1>
-    <div class="range">Entre <b>1</b> et <b>67 676 767</b></div>
-
-    <div id="result" class="num">—</div>
-
-    <button id="btn">Générer</button>
-
-    <div class="small">
-      Astuce: tu peux aussi appuyer sur <b>Espace</b> ou <b>Entrée</b> 😉
-    </div>
+  <div class="container">
+    <div id="num" class="number">—</div>
+    <div class="hint">click · space · enter</div>
   </div>
 
-  <script>
-    const MIN = 1;
-    const MAX = 67676767;
+<script>
+const MIN = 1;
+const MAX = 67676767;
 
-    function randomInt(min, max){
-      // entier inclusif: [min, max]
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+// Plus ce nombre est grand → plus les grands nombres sont RARES
+const RARITY = 6; // 4 = équilibré, 6 = rare, 8 = très rare
 
-    const resultEl = document.getElementById("result");
-    const btn = document.getElementById("btn");
+function rareRandom(min, max, k){
+  const r = Math.random();
+  const biased = Math.pow(r, k); 
+  return Math.floor(min + biased * (max - min));
+}
 
-    function generate(){
-      const n = randomInt(MIN, MAX);
-      resultEl.textContent = n.toLocaleString("fr-FR"); // joli format (espaces)
-    }
+const numEl = document.getElementById("num");
 
-    btn.addEventListener("click", generate);
+function generate(){
+  const n = rareRandom(MIN, MAX, RARITY);
+  numEl.textContent = n.toLocaleString("fr-FR");
+  numEl.classList.remove("fade");
+  void numEl.offsetWidth;
+  numEl.classList.add("fade");
+}
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key === " " || e.key === "Enter") generate();
-    });
+document.addEventListener("click", generate);
+document.addEventListener("keydown", e=>{
+  if(e.key===" " || e.key==="Enter") generate();
+});
 
-    // Génère un premier nombre au chargement
-    generate();
-  </script>
+generate();
+</script>
 </body>
 </html>
